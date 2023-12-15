@@ -22,7 +22,7 @@ const signinContent = {
 };
 
 const initial = { email: "", password: "", username: "", confirmPassword: '' };
-const AuthForm = ({ mode }: { mode: "register" | "signin" }) => {
+const AuthForm = ({ mode }) => {
     const [formState, setFormState] = useState({ ...initial });
     const [errors, setErrors] = useState({ email: '', password: '', username: '', confirmPassword: '' });
     const dispatch = useDispatch();
