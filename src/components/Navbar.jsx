@@ -19,7 +19,9 @@ export default function Navbar() {
     const { isLoggedIn } = useSelector(state => state.AuthData);
     const dispatch = useDispatch()
     console.log("dssdfsfd", isLoggedIn)
-    const userName = JSON.parse(localStorage.getItem('userInfo'))?.firstName
+    const userName = JSON.parse(localStorage.getItem('userInfo'))?.firstName;
+    const role = JSON.parse(localStorage.getItem('RoleInfo'))?.roleName
+    console.log('ssdsdsdsd', role)
     return (
         <Disclosure as="nav" className="bg-gray-800">
             {({ open }) => (
@@ -42,7 +44,12 @@ export default function Navbar() {
                                 {/* Profile dropdown */}
                                 <Menu as="div" className="relative ml-3">
                                     <div className='flex items-center  text-white gap-3 cursor-pointer'>
-                                        <a href={isLoggedIn ? 'product' : 'signin'}>Products</a>
+                                        {role === 'manager' && (
+                                            <>
+                                                <a href="/departments" className="mx-2">Departments</a>
+                                                <a href="/employees" className="mx-2">All Employees</a>
+                                            </>
+                                        )}
                                         {!isLoggedIn ? <div>
                                             <a href='signin'>Sign In</a>
                                             <span>/</span>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useGetCategoryQuery, useGetProductsQuery } from './store/slices';
+import { useGetAllEmployeeQuery, useGetCategoryQuery, useGetProductsQuery } from './store/slices';
 import { CommonModal } from './CommonModal';
 import { RiEyeLine, RiPencilLine, RiDeleteBinLine } from 'react-icons/ri';
 const Product = () => {
-    const { data } = useGetProductsQuery();
+    const { data } = useGetAllEmployeeQuery();
     const { data: categoryData } = useGetCategoryQuery();
     const [products, setProducts] = useState([]);
     useEffect(() => {
@@ -22,7 +22,7 @@ const Product = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     const openViewModal = (productId) => {
-        const product = products.find((p) => p.id === productId);
+        const product = data.find((p) => p._id === productId);
         setSelectedProduct(product);
         setViewModalOpen(true);
     };
@@ -38,33 +38,33 @@ const Product = () => {
         setUpdateModalOpen(false);
     };
     const handleView = (productId) => {
-        const selectedProduct = products.find((product) => product.id === productId);
+        const selectedProduct = products.find((product) => product._id === productId);
         setSelectedProduct(selectedProduct);
         openViewModal(productId);
     };
 
     const handleUpdate = (productId) => {
         const updatedProducts = products.map((product) =>
-            product.id === productId ? { ...product, title: 'Updated Product' } : product
+            product._id === productId ? { ...product, title: 'Updated Product' } : product
         );
         setProducts(updatedProducts);
         openUpdateModal(productId)
     };
 
     const handleDelete = (productId) => {
-        const updatedProducts = products.filter((product) => product.id !== productId);
+        const updatedProducts = products.filter((product) => product._id !== productId);
         setProducts(updatedProducts);
     };
 
-    useEffect(() => {
-        const filteredData = products.filter(
-            (product) =>
-                product.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                (selectedCategory === 'All' || product.category === selectedCategory)
-        );
-        setFilteredProducts(filteredData);
-    }, [searchTerm, selectedCategory, products]);
-
+    // useEffect(() => {
+    //     const filteredData = products.filter(
+    //         (product) =>
+    //             product.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    //             (selectedCategory === 'All' || product.category === selectedCategory)
+    //     );
+    //     setFilteredProducts(filteredData);
+    // }, [searchTerm, selectedCategory, products]);
+    console.log("sss", selectedProduct)
     return (
         <>
             <div className="container mx-auto p-4">
@@ -76,7 +76,7 @@ const Product = () => {
                     className="p-2 mb-4 border rounded"
                 />
 
-                <select
+                {/* <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="p-2 mb-4 border rounded"
@@ -87,38 +87,38 @@ const Product = () => {
                             <option value={item} key={index}>{item?.toUpperCase()}</option>
                         )
                     })}
-                </select>
+                </select> */}
 
                 <table className="min-w-full bg-white border border-gray-300 rounded">
                     <thead>
                         <tr>
-                            <th className="py-2 px-4 border-b">Product Title</th>
-                            <th className="py-2 px-4 border-b">Product Price</th>
-                            <th className="py-2 px-4 border-b">Product Description</th>
-                            <th className="py-2 px-4 border-b">Product Category</th>
+                            <th className="py-2 px-4 border-b">Employee Name</th>
+                            <th className="py-2 px-4 border-b">Employee Email</th>
+                            <th className="py-2 px-4 border-b">Employee Location</th>
+                            <th className="py-2 px-4 border-b">Department</th>
                             <th className="py-2 px-4 border-b">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredProducts.map((product) => (
-                            <tr key={product.id} className="hover:bg-gray-100">
-                                <td className="py-2 px-4 border-b">{product.title}</td>
-                                <td className="py-2 px-4 border-b">{product.price}</td>
-                                <td className="py-2 px-4 border-b">{product.description}</td>
-                                <td className="py-2 px-4 border-b">{product.category}</td>
-                                <td className="py-2 px-4 border-b gap-2 flex">
+                        {data?.map((employee) => (
+                            <tr key={employee?._id} className="hover:bg-gray-100">
+                                <td className="py-2 px-8 border-b text-center">{employee?.name}</td>
+                                <td className="py-2 px-4 border-b text-center">{employee?.email}</td>
+                                <td className="py-2 px-4 border-b text-center">{employee?.location}</td>
+                                <td className="py-2 px-4 border-b text-center">{employee?.department?.name}</td>
+                                <td className="py-2 px-4 border-b text-center gap-2 flex">
                                     <button
-                                        onClick={() => handleView(product.id)}
+                                        onClick={() => handleView(employee._id)}
                                     >
                                         <RiEyeLine className="text-blue-700" />
                                     </button>
                                     <button
-                                        onClick={() => handleUpdate(product.id)}
+                                        onClick={() => handleUpdate(employee._id)}
                                     >
                                         <RiPencilLine className="text-orange-500" />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(product.id)}
+                                        onClick={() => handleDelete(employee._id)}
                                     >
                                         <RiDeleteBinLine className="text-red-500" />
                                     </button>
@@ -135,79 +135,78 @@ const Product = () => {
                 content={
                     selectedProduct && (
                         <>
-                            <p>ID: {selectedProduct.id}</p>
-                            <p>Title: {selectedProduct.title}</p>
-                            <p>Price: {selectedProduct.price}</p>
-                            <p>Description: {selectedProduct.description}</p>
-                            <p>Category: {selectedProduct.category}</p>
+                            <p>ID: {selectedProduct._id}</p>
+                            <p>Namw: {selectedProduct.name}</p>
+                            <p>Email: {selectedProduct.email}</p>
+                            <p>Department: {selectedProduct.department?.name}</p>
                         </>
                     )
                 }
             />
             <CommonModal
                 isOpen={isUpdateModalOpen}
-                onClose={closeModals}
-                title="Update Product"
-                content={
-                    selectedProduct && (
-                        <form onSubmit={() => closeModals()}>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-sm font-medium text-gray-600">
-                                    Product Title
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    name="title"
-                                    value={selectedProduct.title}
-                                    onChange={(e) => handleInputChange(e, 'title')}
-                                    className="mt-1 p-2 border rounded-md w-full"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="price" className="block text-sm font-medium text-gray-600">
-                                    Product Price
-                                </label>
-                                <input
-                                    type="text"
-                                    id="price"
-                                    name="price"
-                                    value={selectedProduct.price}
-                                    onChange={(e) => handleInputChange(e, 'price')}
-                                    className="mt-1 p-2 border rounded-md w-full"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-600">
-                                    Product Description
-                                </label>
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    value={selectedProduct.description}
-                                    onChange={(e) => handleInputChange(e, 'description')}
-                                    className="mt-1 p-2 border rounded-md w-full"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="category" className="block text-sm font-medium text-gray-600">
-                                    Product Category
-                                </label>
-                                <input
-                                    type="text"
-                                    id="category"
-                                    name="category"
-                                    value={selectedProduct.category}
-                                    onChange={(e) => handleInputChange(e, 'category')}
-                                    className="mt-1 p-2 border rounded-md w-full"
-                                />
-                            </div>
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                                Update
-                            </button>
-                        </form>
-                    )
-                }
+            //     onClose={closeModals}
+            //     title="Update Product"
+            //     content={
+            //         selectedProduct && (
+            //             <form onSubmit={() => closeModals()}>
+            //                 <div className="mb-4">
+            //                     <label htmlFor="title" className="block text-sm font-medium text-gray-600">
+            //                         Product Title
+            //                     </label>
+            //                     <input
+            //                         type="text"
+            //                         id="title"
+            //                         name="title"
+            //                         value={selectedProduct.title}
+            //                         onChange={(e) => handleInputChange(e, 'title')}
+            //                         className="mt-1 p-2 border rounded-md w-full"
+            //                     />
+            //                 </div>
+            //                 <div className="mb-4">
+            //                     <label htmlFor="price" className="block text-sm font-medium text-gray-600">
+            //                         Product Price
+            //                     </label>
+            //                     <input
+            //                         type="text"
+            //                         id="price"
+            //                         name="price"
+            //                         value={selectedProduct.price}
+            //                         onChange={(e) => handleInputChange(e, 'price')}
+            //                         className="mt-1 p-2 border rounded-md w-full"
+            //                     />
+            //                 </div>
+            //                 <div className="mb-4">
+            //                     <label htmlFor="description" className="block text-sm font-medium text-gray-600">
+            //                         Product Description
+            //                     </label>
+            //                     <textarea
+            //                         id="description"
+            //                         name="description"
+            //                         value={selectedProduct.description}
+            //                         onChange={(e) => handleInputChange(e, 'description')}
+            //                         className="mt-1 p-2 border rounded-md w-full"
+            //                     />
+            //                 </div>
+            //                 <div className="mb-4">
+            //                     <label htmlFor="category" className="block text-sm font-medium text-gray-600">
+            //                         Product Category
+            //                     </label>
+            //                     <input
+            //                         type="text"
+            //                         id="category"
+            //                         name="category"
+            //                         value={selectedProduct.category}
+            //                         onChange={(e) => handleInputChange(e, 'category')}
+            //                         className="mt-1 p-2 border rounded-md w-full"
+            //                     />
+            //                 </div>
+            //                 <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+            //                     Update
+            //                 </button>
+            //             </form>
+            //         )
+
             />
         </>
     );

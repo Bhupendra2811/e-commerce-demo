@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import Card from './Card';
 import { useDispatch } from 'react-redux';
-import { login } from './store/slices';
+import { login, useLogInMutation } from './store/slices';
 import { toast } from 'react-toastify';
+import { setUserToken } from 'config/auth.util';
 
 const registerContent = {
     linkUrl: "/signin",
@@ -27,7 +28,7 @@ const AuthForm = ({ mode }) => {
     const [errors, setErrors] = useState({ email: '', password: '', username: '', confirmPassword: '' });
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    const [logIn] = useLogInMutation()
     const validateForm = (mode) => {
         if (mode === 'register') {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,15 +68,19 @@ const AuthForm = ({ mode }) => {
                     navigate('/signin');
                 }
                 else {
-                    const storedUserInfo = JSON.parse(localStorage.getItem('userInfo'));
-                    if (storedUserInfo?.email === formState?.email && storedUserInfo?.password === formState?.password) {
-                        dispatch(login());
-                        toast.success('Successfully logged in!');
-
-                        navigate('/');
-                    } else {
-                        toast.error('Invalid Credentials! Please try again.');
+                    let payload = {
+                        email: formState.email,
+                        password: formState.password
                     }
+                    const res = await logIn(payload);
+                    console.log("response login ", res);
+                    setUserToken(res?.data?.data?.token);
+                    let role = { roleName: res?.data?.data?.userExists?.roleName, roleId: res?.data?.data?.userExists?.roleId }
+                    localStorage.setItem('RoleInfo', JSON.stringify(role))
+                    dispatch(login());
+                    toast.success('Successfully logged in!');
+                    navigate('/');
+
                 }
             }
         },

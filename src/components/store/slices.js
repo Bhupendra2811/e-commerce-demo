@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { BaseURL } from "lib/api";
 // export const fetchData = createAsyncThunk('data/fetchDatafromApi', async (character) => {
 //     const response = await fetch(baseUrl + character)
 //     const data = await response.json()
@@ -77,7 +78,7 @@ export const AuthData = createSlice({
 export const ProductApi = createApi({
     reducerPath: 'ProductApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `https://fakestoreapi.com/`,
+        baseUrl: BaseURL,
         prepareHeaders: (headers, { getState }) => {
             const currentToken = JSON.parse(localStorage.getItem('token'));
             if (currentToken) {
@@ -91,24 +92,44 @@ export const ProductApi = createApi({
     }),
     tagTypes: ['ProductApiType'],
     endpoints: (builder) => ({
-        // createOnBoarding: builder.mutation({
-        //     query: ({ id, ...data }) => ({
-        //         url: `user/update/${id}`,
-        //         method: 'PUT',
-        //         body: { ...data?.data },
-        //     }),
-        // }),
-        // updateUserData: builder.mutation({
-        //     query: ({ id, body }) => {
-        //         const formData = convertObjectToFormData(body);
-        //         return {
-        //             url: `user/update/${id}`,
-        //             method: 'PUT',
-        //             body: body,
-        //             formData: true
-        //         }
-        //     },
-        // }),
+        createDepartment: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/create-department/${id}`,
+                method: 'POST',
+                body: { ...data },
+            }),
+        }),
+        signUp: builder.mutation({
+            query: (data) => {
+                return {
+                    url: `/signup`,
+                    method: 'POST',
+                    body: { ...data },
+                }
+            },
+        }),
+        logIn: builder.mutation({
+            query: (data) => {
+                return {
+                    url: `/login`,
+                    method: 'POST',
+                    body: { ...data },
+                }
+            },
+        }),
+        updateDepartment: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/update-department/${id}`,
+                method: 'PUT',
+                body: { ...data },
+            }),
+        }),
+        deleteDepartment: builder.mutation({
+            query: (id) => ({
+                url: `/delete-department/${id}`,
+                method: 'DELETE',
+            }),
+        }),
         getProducts: builder.query({
             query: () => ({
                 url: "products/",
@@ -118,72 +139,46 @@ export const ProductApi = createApi({
                 { type: 'products', id: 'LIST' }
             ],
         }),
+        getAllRoles: builder.query({
+            query: () => ({
+                url: "/get-all-roles",
+                method: 'GET'
+            }),
+            providesTags: (result) => [
+                { type: 'roles', id: 'LIST' }
+            ],
+        }),
         getCategory: builder.query({
             query: () => ({
                 url: "products/categories",
                 method: 'GET'
             }),
         }),
-        // get_newsletter_option: builder.query({
-        //     query: () => ({
-        //         url: "newLetterCategory/get",
-        //         method: 'GET'
-        //     }),
-        // }),
-        // get_newsletter_profile: builder.query({
-        //     query: (email) => (
-        //         {
-        //             url: `/suscribe/get?email=${email}`,
-        //             method: 'GET'
-        //         }),
-        // }),
-        // update_newsletter: builder.mutation({
-        //     query: ({ id, category }) => {
-        //         return {
-        //             url: `/suscribe/${id}`,
-        //             method: 'PUT',
-        //             body: { category: category },
-        //             formData: true
-        //         }
-        //     },
-        // }),
-        // accept_endorsement: builder.mutation({
-        //     query: (data) => ({
-        //         url: `user/accept-endorsement`,
-        //         method: 'POST',
-        //         body: { ...data },
-        //     }),
-        // }),
-        // get_newsletter_data: builder.query({
-        //     query: ({ offset = 1, limit = 50, search = '' }) => (
-        //         {
-        //             url: `/suscribe/get?offset=${offset}&limit=${limit}&search=${search}`,
-        //             method: 'GET'
-        //         }),
-        // }),
-        // active_newsletter: builder.mutation({
-        //     query: (data) => {
-        //         return {
-        //             url: `/suscribe/manage`,
-        //             method: 'PUT',
-        //             body: { ...data },
-        //         }
-        //     },
-        // }),
-        // newsletter_approve: builder.mutation({
-        //     query: (data) => {
-        //         return {
-        //             url: `/suscribe/approve`,
-        //             method: 'PUT',
-        //             body: { ...data },
-        //         }
-        //     },
-        // }),
+        getDepartment: builder.query({
+            query: () => ({
+                url: "/get-all-departments",
+                method: 'GET'
+            }),
+        }),
+        getAllEmployee: builder.query({
+            query: () => ({
+                url: "/get-all-employees",
+                method: 'GET'
+            }),
+        }),
     })
 })
 export const {
     useGetProductsQuery,
-    useGetCategoryQuery
+    useGetCategoryQuery,
+    useSignUpMutation,
+    useLogInMutation,
+    useGetAllRolesQuery,
+    useGetDepartmentQuery,
+    useUpdateDepartmentMutation,
+    useDeleteDepartmentMutation,
+    useCreateDepartmentMutation,
+    useGetAllEmployeeQuery
 } = ProductApi
 export const { login, logout, setShowMeetingButton, checkLogin, setIsEditActive, setSelectedSolution, setDataLoading, setData, setDelete, setVerificationEmail, setUserRole, setUserRoleInfo, setRegisterModal, setRegisterEmail, setEditnewsLdata } = AuthData.actions;
 export default AuthData.reducer;

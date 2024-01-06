@@ -5,12 +5,14 @@ const GlassPane = ({ children, className }) => {
     return (
         <div
             className={clsx(
-                "glass rounded-2xl border-2 border-solid border-gray-200",
+                "glass rounded-2xl border-2 border-solid border-gray-200 flex flex-col min-h-screen",
                 className
             )}
         >
             <Navbar />
-            {children}
+            <div className="flex-1 overflow-auto p-6">
+                {children}
+            </div>
         </div>
     );
 };

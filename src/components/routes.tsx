@@ -11,12 +11,18 @@ import DefaultLayout from "./defaultLayout/defaultLayout";
 import GlassPane from "./GlassPane";
 import Product from "./Product";
 import ProtectedRoute from "utils/ProtectedRoutes";
+import DepartmentPage from "../pages/Department";
+import EmployeeListPage from "../pages/EmployeeListPage";
+import EmployeeDetailsPage from "../pages/EmployeeDetailsPage";
+import ProfilePage from "../pages/ProfilePage";
 
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <DefaultLayout><HomeScreen /></DefaultLayout>,
+        element: <DefaultLayout>
+            <GlassPane className="candy-mesh h-screen w-screen p-6"><Product />
+            </GlassPane></DefaultLayout>,
     },
     {
         path: "/signin",
@@ -35,15 +41,47 @@ const router = createBrowserRouter([
         </DefaultLayout>,
     },
     {
-        path: "/product",
+        path: "/departments",
         element: <DefaultLayout>
             <GlassPane className="candy-mesh h-screen w-screen p-6">
-                <ProtectedRoute>
-                    <Product />
-                </ProtectedRoute>
+                <DepartmentPage />
             </GlassPane>
         </DefaultLayout>,
     },
+    {
+        path: "/employees",
+        element: <DefaultLayout>
+            <GlassPane className="candy-mesh h-screen w-screen p-6">
+                <EmployeeListPage />
+            </GlassPane>
+        </DefaultLayout>,
+    },
+    {
+        path: "/employee/:id",
+        element: <DefaultLayout>
+            <GlassPane className="candy-mesh h-screen w-screen p-6">
+                <EmployeeDetailsPage />
+            </GlassPane>
+        </DefaultLayout>,
+    },
+    {
+        path: "/profile",
+        element: <DefaultLayout>
+            <GlassPane className="candy-mesh h-screen w-screen p-6">
+                <ProfilePage />
+            </GlassPane>
+        </DefaultLayout>,
+    },
+    // {
+    //     path: "/product",
+    //     element: <DefaultLayout>
+    //         <GlassPane className="candy-mesh h-screen w-screen p-6">
+    //             <ProtectedRoute>
+    //                 <Product />
+    //             </ProtectedRoute>
+    //         </GlassPane>
+    //     </DefaultLayout>,
+    // },
 ]);
 
 export default router
