@@ -1,80 +1,59 @@
-![reactjs-vite-tailwindcss-boilerplate](https://user-images.githubusercontent.com/16243531/217138979-b854309c-4742-4275-a705-f9fec5158217.jpg)
+# Employee Management System
 
-# React Tailwindcss Boilerplate build with Vite
+This project is an Employee Management System with features such as user authentication, department management, employee CRUD operations, and filtering capabilities.
 
-This is a boilerplate build with Vite, React 18, TypeScript, Vitest, Testing Library, TailwindCSS 3, Eslint and Prettier.
+## Prerequisites
 
-## What is inside?
+Before you begin, ensure you have the following installed:
 
-This project uses many tools like:
+- Node.js and npm: [Download Node.js](https://nodejs.org/)
+- MongoDB: [Install MongoDB](https://www.mongodb.com/try/download/community)
+- Git: [Download Git](https://git-scm.com/)
 
-- [Vite](https://vitejs.dev)
-- [ReactJS](https://reactjs.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Vitest](https://vitest.dev)
-- [Testing Library](https://testing-library.com)
-- [Tailwindcss](https://tailwindcss.com)
-- [Eslint](https://eslint.org)
-- [Prettier](https://prettier.io)
+## Installation
 
-## Getting Started
+1. **Clone the Repository:**
 
-### Install
+   ```bash
+   git clone https://github.com/Bhupendra2811/e-commerce-demo
+   cd employee-management-system
+# Navigate to frontend folder
+cd frontend
+npm install
 
-Create the project.
+# Navigate to backend folder
+cd ../backend
+npm install
 
-```bash
-npx degit joaopaulomoraes/reactjs-vite-tailwindcss-boilerplate my-app
-```
 
-Access the project directory.
+# Inside frontend folder
+npm run dev
 
-```bash
-cd my-app
-```
+# Inside backend folder
+npm start
 
-Install dependencies.
 
-```bash
-pnpm install
-```
+Features
+Signup/Login Page:
 
-Serve with hot reload at <http://localhost:5173>.
+Navigate to http://localhost:3000 to access the signup/login page.
+Department Management:
 
-```bash
-pnpm run dev
-```
+Managers can create, update, and delete departments.
+Access http://localhost:3000/departments for department management.
+Employee Management:
 
-### Lint
+Managers can create, read, update, and delete employees.
+Employees can view their details.
+Access http://localhost:3000/employees for employee management.
+Filtering Employees:
 
-```bash
-pnpm run lint
-```
+Filter employees by location and name in ascending and descending order.
+Implemented using API endpoints.
+Assign Departments:
 
-### Typecheck
-
-```bash
-pnpm run typecheck
-```
-
-### Build
-
-```bash
-pnpm run build
-```
-
-### Test
-
-```bash
-pnpm run test
-```
-
-View and interact with your tests via UI.
-
-```bash
-pnpm run test:ui
-```
-
-## License
-
+Managers can assign departments to employees.
+License
 This project is licensed under the MIT License.
+
+
