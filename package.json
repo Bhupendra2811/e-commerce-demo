@@ -13,7 +13,7 @@
     "serve": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "start": "index.jsx",
+    "start": "index.tsx",
     "server": "nodemon server.js"
   },
   "dependencies": {
