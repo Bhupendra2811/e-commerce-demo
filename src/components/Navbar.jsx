@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import logo from '../public/assets/Logo.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from './store/slices';
+import { logoutT } from 'config/auth.util';
 
 const navigation = [
     { name: 'Dashboard', href: '#', current: true },
@@ -18,10 +19,8 @@ function classNames(...classes) {
 export default function Navbar() {
     const { isLoggedIn } = useSelector(state => state.AuthData);
     const dispatch = useDispatch()
-    console.log("dssdfsfd", isLoggedIn)
     const userName = JSON.parse(localStorage.getItem('userInfo'))?.firstName;
     const role = JSON.parse(localStorage.getItem('RoleInfo'))?.roleName
-    console.log('ssdsdsdsd', role)
     return (
         <Disclosure as="nav" className="bg-gray-800">
             {({ open }) => (
@@ -33,10 +32,9 @@ export default function Navbar() {
 
                             </div>
                             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                                <a href='/'><img className="h-8 w-auto" src={logo} alt="Logo" /></a>
 
                                 <div className="hidden sm:ml-6 sm:block">
-
+                                    {role === 'manager' && <a href='/dashboard' className='text-white gap-3 cursor-pointer'>Home</a>}
                                 </div>
                             </div>
                             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -81,7 +79,7 @@ export default function Navbar() {
                                                     <a
                                                         href="/signin"
                                                         className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                                        onClick={() => { localStorage.removeItem('userInfo'), dispatch(logout()) }}
+                                                        onClick={() => { localStorage.removeItem('userInfo'), localStorage.removeItem('RoleInfo'), logoutT(), dispatch(logout()) }}
                                                     >
                                                         Sign out
                                                     </a>

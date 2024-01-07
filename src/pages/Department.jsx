@@ -1,11 +1,13 @@
 // DepartmentPage.js
 import CustomModal from 'components/CustomModal';
-import { ProductApi, useCreateDepartmentMutation, useDeleteDepartmentMutation, useUpdateDepartmentMutation } from 'components/store/slices';
+import Pagination from 'components/pagination/Pagination';
+import { ProductApi, useCreateDepartmentMutation, useDeleteDepartmentMutation, useGetDepartmentQuery, useUpdateDepartmentMutation } from 'components/store/slices';
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 const DepartmentPage = () => {
     const [departments, setDepartments] = useState([]);
+    const managerid = JSON.parse(localStorage.getItem('RoleInfo'))?.roleId
     const dispatch = useDispatch()
     const [newDepartment, setNewDepartment] = useState({ name: '', description: '' });
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,23 +18,24 @@ const DepartmentPage = () => {
     const openModal = () => {
         setIsModalOpen(true);
     };
+    const [currentPage, setCurrentPage] = useState(1)
+    const [search, setSearch] = useState('')
+    const limit = 10
+    const [totalPages, setTotalPages] = useState(1)
+    const { data, error, isLoading, refetch } = useGetDepartmentQuery({
+        page: currentPage,
+        limit: limit,
+    })
 
     const closeModal = () => {
         setIsModalOpen(false);
     };
-    function getAllDepartment() {
-        dispatch(ProductApi.endpoints.getDepartment.initiate({}, { forceRefetch: true })).unwrap()
-            .then(res => {
-                console.log("department ,res", res),
-                    setDepartments(res);
-            })
-    }
     useEffect(() => {
-        getAllDepartment()
-    }, [])
-
-
-
+        if (data) {
+            setDepartments(data?.data?.departments);
+            setTotalPages(Math.ceil(data?.data?.totalLength / 10))
+        }
+    }, [data])
     const handleInputChange = (e) => {
         setNewDepartment({
             ...newDepartment,
@@ -51,7 +54,7 @@ const DepartmentPage = () => {
     const handleDeleteClick = async (departmentId) => {
         try {
             await deleteDepartment(departmentId)
-            getAllDepartment()
+            refetch()
         } catch (error) {
             console.error('Error deleting department:', error);
         }
@@ -60,19 +63,21 @@ const DepartmentPage = () => {
         e.preventDefault();
         try {
             if (editingDepartment) {
-
                 await updateDepartment({ id: editingDepartment?._id, data: newDepartment })
             } else {
-                await createDepartment()
+                let payload = {
+                    ...newDepartment,
+                    managerId: managerid
+                }
+                await createDepartment(payload)
             }
             closeModal();
-            getAllDepartment()
+            refetch()
+            setNewDepartment({})
         } catch (error) {
             console.error('Error creating/editing department:', error);
         }
     };
-
-    console.log("editing department", editingDepartment)
 
     return (
         <div className="container mx-auto mt-8">
@@ -85,26 +90,11 @@ const DepartmentPage = () => {
                     Create New Department
                 </button>
             </div>
-            {/* Department Form */}
-            {/* <div className="mb-8">
-                <h2 className="text-xl font-bold mb-2">Create New Department</h2>
-                <form onSubmit={handleSubmit} className="flex flex-col w-64">
-
-
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none"
-                    >
-                        Create Department
-                    </button>
-                </form>
-            </div> */}
-
-            {/* Department List */}
+            
             <div>
                 <h2 className="text-xl font-bold mb-4">Existing Departments</h2>
                 <ul>
-                    {departments.map((department) => (
+                    {departments?.length > 0 && departments.map((department) => (
                         <li key={department._id} className="mb-4 border p-4 rounded">
                             <div className="flex justify-between">
                                 <div>
@@ -162,6 +152,14 @@ const DepartmentPage = () => {
                         </button>
                     </form>
                 </CustomModal>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => {
+                        setCurrentPage(page)
+                    }}
+                />
+
             </div>
         </div>
     );

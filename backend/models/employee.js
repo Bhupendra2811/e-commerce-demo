@@ -18,6 +18,8 @@ const employeeSchema = new mongoose.Schema({
         ref: 'Department', 
     },
     // Add other fields as needed
+}, {
+    timestamps: true,
 });
 
 const Employee = mongoose.model('Employee', employeeSchema);

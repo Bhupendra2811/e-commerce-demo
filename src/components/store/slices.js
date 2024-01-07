@@ -93,8 +93,8 @@ export const ProductApi = createApi({
     tagTypes: ['ProductApiType'],
     endpoints: (builder) => ({
         createDepartment: builder.mutation({
-            query: ({ id, data }) => ({
-                url: `/create-department/${id}`,
+            query: (data) => ({
+                url: `/create-department`,
                 method: 'POST',
                 body: { ...data },
             }),
@@ -155,16 +155,38 @@ export const ProductApi = createApi({
             }),
         }),
         getDepartment: builder.query({
-            query: () => ({
-                url: "/get-all-departments",
+            query: ({ page = 1, limit = 10 }) => ({
+                url: `/get-all-departments?page=${page}&limit=${limit}`,
                 method: 'GET'
             }),
         }),
         getAllEmployee: builder.query({
-            query: () => ({
-                url: "/get-all-employees",
+            query: ({ page = 1, limit = 10, sortField = '', sortOrder = 'asc' }) => ({
+                url: `/get-all-employees?page=${page}&limit=${limit}&sortField=${sortField}&sortOrder=${sortOrder}`,
                 method: 'GET'
             }),
+        }),
+        updateEmployee: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/update-employee/${id}`,
+                method: 'PUT',
+                body: { ...data },
+            }),
+        }),
+        deleteEmployee: builder.mutation({
+            query: (id) => ({
+                url: `/delete-employee/${id}`,
+                method: 'DELETE',
+            }),
+        }),
+        getEmployeeDetailById: builder.query({
+            query: ({ id }) => {
+                if (!id) return
+                return {
+                    url: `/get-employee-details/${id}`,
+                    method: 'GET'
+                }
+            },
         }),
     })
 })
@@ -178,7 +200,10 @@ export const {
     useUpdateDepartmentMutation,
     useDeleteDepartmentMutation,
     useCreateDepartmentMutation,
-    useGetAllEmployeeQuery
+    useGetAllEmployeeQuery,
+    useDeleteEmployeeMutation,
+    useUpdateEmployeeMutation,
+    useGetEmployeeDetailByIdQuery
 } = ProductApi
 export const { login, logout, setShowMeetingButton, checkLogin, setIsEditActive, setSelectedSolution, setDataLoading, setData, setDelete, setVerificationEmail, setUserRole, setUserRoleInfo, setRegisterModal, setRegisterEmail, setEditnewsLdata } = AuthData.actions;
 export default AuthData.reducer;

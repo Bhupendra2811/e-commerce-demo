@@ -12,26 +12,32 @@ const checkManagerRole = async (req, res, next) => {
     }
 
     try {
-        console.log("tokenee", token)
         const decoded = jwt.verify(token, 'testKey');
-        console.log("decodeToken", decoded)// Replace 'your-secret-key' with your actual secret key
-        // const userRole = await authHandler.getLoginRole(decoded.roleId);
         const { _id } = decoded
         const userRole = await authHandler.getUserLogedInRole(_id);
-        console.log("userRole", userRole)
         if (userRole !== 'manager') {
             return res.status(403).json({ message: 'Only managers can perform this action.' });
         }
-
-        // Attach decoded user information to the request for further use
         req.user = decoded;
-
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Unauthorized: Invalid token.' });
     }
 };
 
+/**
+ *  pagination function
+ * @param {*} array 
+ * @param {*} page 
+ * @param {*} limit 
+ * @returns 
+ */
+function paginate(array, page = 1, limit = 10) {
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    return array.slice(startIndex, endIndex);
+}
 // module.exports = checkManagerRole;
 
 
@@ -39,7 +45,7 @@ module.exports = {
     createDepartment: async (req, res) => {
         try {
             const newDepartment = await departmentModule.createDepartment(req.body);
-            res.status(201).json(newDepartment);
+            res.status(201).json({ success: true, message: "create successfully", data: newDepartment });
         } catch (error) {
             res.status(500).json({ message: 'Error creating department.' });
         }
@@ -48,19 +54,16 @@ module.exports = {
     updateDepartment: [checkManagerRole, async (req, res) => {
         try {
             const { id } = req.params;
-            console.log("departmentId", req.params)
             const updatedDepartment = await departmentModule.updateDepartment(id, req.body);
-
-            // Check if the department was not found
             if (!updatedDepartment) {
                 return res.status(404).json({ message: 'Department not found.' });
             }
 
-            // Log the updated department
-            console.log("updatedDepartment", updatedDepartment);
-
-            // Send the updated department in the response
-            res.json(updatedDepartment);
+            res.json({
+                success: true,
+                message: "update successfully",
+                data: updatedDepartment,
+            });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Error updating department.' });
@@ -71,7 +74,11 @@ module.exports = {
         try {
             const { id } = req.params;
             const deletedDepartment = await departmentModule.deleteDepartment(id);
-            res.json(deletedDepartment);
+            res.json({
+                success: true,
+                message: "delete successfully",
+                data: deletedDepartment,
+            });
         } catch (error) {
             res.status(500).json({ message: 'Error deleting department.' });
         }
@@ -79,8 +86,19 @@ module.exports = {
 
     getAllDepartments: async (req, res) => {
         try {
+            let { page, limit } = req.query
             const departments = await departmentModule.getAllDepartments();
-            res.json(departments);
+            const totalLength = departments.length;
+
+            let data = paginate(departments, page, limit);
+            res.json({
+                success: true,
+                message: "Fetched department successfully",
+                data: {
+                    departments: data,
+                    totalLength: totalLength,
+                },
+            });
         } catch (error) {
             res.status(500).json({ message: 'Error fetching departments.' });
         }

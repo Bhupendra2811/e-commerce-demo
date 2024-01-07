@@ -42,15 +42,12 @@ const createToken = async (reqBody) => {
 const getUserLogedInRole = async (userId) => {
 
   const user = await userModel.findById(userId);
-  console.log("ssssss", user)
   if (!user) {
     throw new Error('User not found');
   }
 
   const roleId = user.roleId;
-  console.log("ssssss", roleId)
   const role = await roleModel.findById(roleId);
-  console.log("ssssss", role)
   if (!role) {
     throw new Error('Role not found');
   }

@@ -2,7 +2,12 @@
 const employeeModule = require('../modules/employeeModule');
 const authHandler = require('../handlers/authHandler')
 const jwt = require('jsonwebtoken');
+function paginate(array, page = 1, limit = 10) {
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
 
+    return array.slice(startIndex, endIndex);
+}
 // Middleware to check if the user is a manager
 const checkManagerRole = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', ''); // Assuming the token is sent in the Authorization header
@@ -12,20 +17,15 @@ const checkManagerRole = async (req, res, next) => {
     }
 
     try {
-        console.log("tokenee", token)
         const decoded = jwt.verify(token, 'testKey');
-        console.log("decodeToken", decoded)// Replace 'your-secret-key' with your actual secret key
-        // const userRole = await authHandler.getLoginRole(decoded.roleId);
         const { _id } = decoded
         const userRole = await authHandler.getUserLogedInRole(_id);
-        console.log("userRole", userRole)
+
         if (userRole !== 'manager') {
             return res.status(403).json({ message: 'Only managers can perform this action.' });
         }
 
-        // Attach decoded user information to the request for further use
         req.user = userRole;
-
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Unauthorized: Invalid token.' });
@@ -45,7 +45,6 @@ module.exports = {
     updateEmployee: [checkManagerRole, async (req, res) => {
         try {
             const { id } = req.params;
-            console.log("requestusermeployer", req)
             const updatedEmployee = await employeeModule.updateEmployee(id, req.body, req.user);
             res.json(updatedEmployee);
         } catch (error) {
@@ -65,8 +64,24 @@ module.exports = {
 
     getAllEmployees: async (req, res) => {
         try {
-            const employees = await employeeModule.getAllEmployees();
-            res.json(employees);
+            let { page, limit, sortField, sortOrder, location } = req.query;
+
+            const result = await employeeModule.getAllEmployees(
+                page,
+                limit,
+                sortField,
+                sortOrder,
+                location
+            );
+
+            res.json({
+                success: true,
+                message: 'Employees fetched successfully',
+                data: {
+                    employees: result.employees,
+                    totalLength: result.totalLength,
+                },
+            });
         } catch (error) {
             res.status(500).json({ message: 'Error fetching employees.' });
         }
@@ -74,9 +89,14 @@ module.exports = {
 
     getEmployeeDetails: async (req, res) => {
         try {
-            const { employeeId } = req.params;
-            const employee = await employeeModule.getEmployeeDetails(employeeId);
-            res.json(employee);
+            const { id } = req.params;
+            const employee = await employeeModule.getEmployeeDetails(id);
+
+            res.json({
+                success: true,
+                message: "Employees fetched successfully",
+                data: employee
+            });
         } catch (error) {
             res.status(500).json({ message: 'Error fetching employee details.' });
         }
@@ -84,9 +104,18 @@ module.exports = {
 
     filterEmployeesByLocation: async (req, res) => {
         try {
-            const { location } = req.query;
+            const { location, page, limit } = req.query;
             const employees = await employeeModule.filterEmployeesByLocation(location);
-            res.json(employees);
+            let data = paginate(employees, page, limit);
+            const totalLength = employees.length;
+            res.json({
+                success: true,
+                message: "Employees fetched successfully",
+                data: {
+                    employees: data,
+                    totalLength: totalLength,
+                },
+            });
         } catch (error) {
             res.status(500).json({ message: 'Error filtering employees by location.' });
         }
@@ -105,13 +134,12 @@ module.exports = {
         try {
             const { id } = req.params;
             const { departmentId } = req.body;
-            console.log("assignment", id, departmentId)
             const updatedEmployee = await employeeModule.assignDepartmentToEmployee(
                 id,
                 departmentId,
                 req.user
             );
-            console.log("updatedEmployee", updatedEmployee)
+            
             res.json(updatedEmployee);
         } catch (error) {
             res.status(500).json({ message: 'Error assigning department to employee.' });

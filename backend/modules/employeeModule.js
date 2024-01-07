@@ -1,5 +1,6 @@
 // modules/employeeModule.js
 const Employee = require('../models/employee');
+const userModel = require('../models/user');
 
 module.exports = {
   createEmployee: async (employeeData) => {
@@ -39,18 +40,34 @@ module.exports = {
     }
   },
 
-  getAllEmployees: async () => {
+  getAllEmployees: async (page, limit, sortField, sortOrder, location) => {
     try {
-      const employees = await Employee.find().populate('department');
-      return employees;
+      let sortQuery = {};
+      if (sortField) {
+        sortQuery[sortField] = sortOrder === 'asc' ? 1 : -1;
+      }
+
+      const query = location ? { location } : {};
+
+      const employees = await Employee.find(query)
+        .sort(sortQuery)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate('department');
+
+      const totalLength = await Employee.countDocuments(query);
+
+      return {
+        employees,
+        totalLength,
+      };
     } catch (error) {
       throw error;
     }
   },
-
   getEmployeeDetails: async (employeeId) => {
     try {
-      const employee = await Employee.findById(employeeId);
+      const employee = await userModel.findById(employeeId);
       return employee;
     } catch (error) {
       throw error;
@@ -59,7 +76,7 @@ module.exports = {
 
   filterEmployeesByLocation: async (location) => {
     try {
-      const employees = await Employee.find({ location });
+      const employees = await Employee.find({ location }).populate('department');
       return employees;
     } catch (error) {
       throw error;
@@ -75,12 +92,11 @@ module.exports = {
     }
   },
   assignDepartmentToEmployee: async (employeeId, departmentId, requestingUserRole) => {
-    console.log("modeleee",employeeId, departmentId, requestingUserRole)
     try {
       if (requestingUserRole !== 'manager') {
         throw new Error('Only managers can assign departments.');
       }
-     
+
       const updatedEmployee = await Employee.findByIdAndUpdate(
         employeeId,
         { department: departmentId },

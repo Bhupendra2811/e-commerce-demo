@@ -57,7 +57,7 @@ const ImageCarousel = () => {
     const goToSlide = (slideIndex) => {
         setCurrentIndex(slideIndex);
     };
-    console.log("sasasssa", productImages[currentIndex])
+    
     return (
         <div className='max-w-[1400px] h-[780px] w-full m-auto py-16 px-4 relative group'>
             <div

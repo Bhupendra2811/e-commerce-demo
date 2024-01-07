@@ -91,6 +91,6 @@ router.put('/update-employee/:id', employeeHandler.updateEmployee)
 router.delete('/delete-employee/:id', employeeHandler.deleteEmployee)
 router.get('/get-all-employees', employeeHandler.getAllEmployees)
 router.get('/get-employee-details/:id', employeeHandler.getEmployeeDetails)
-router.put('/employees/:id/assign-department', employeeHandler.assignDepartmentToEmployee);
+router.put('/employees/assign-department/:id', employeeHandler.assignDepartmentToEmployee);
 
 module.exports = router
