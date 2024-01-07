@@ -4,20 +4,17 @@
   "version": "0.1.0",
   "private": true,
   "author": {
-    "name": "João Paulo Moraes",
-    "email": "joaopaulomoraes@outlook.com",
-    "url": "https://github.com/joaopaulomoraes"
-  },
-  "bugs": {
-    "url": "https://github.com/joaopaulomoraes/reactjs-vite-tailwindcss-boilerplate/issues",
-    "email": "joaopaulomoraes@outlook.com"
+    "name": "Bs",
+    "email": "c.bhupendra12@gmail.com",
   },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "start": "index.jsx",
+    "server": "nodemon server.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
