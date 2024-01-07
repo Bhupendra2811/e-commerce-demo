@@ -5,7 +5,7 @@
   "private": true,
   "author": {
     "name": "Bs",
-    "email": "c.bhupendra12@gmail.com",
+    "email": "c.bhupendra12@gmail.com"
   },
   "scripts": {
     "dev": "vite",
