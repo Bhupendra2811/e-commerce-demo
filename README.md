@@ -30,7 +30,7 @@ npm install
 npm run dev
 
 # Inside backend folder
-npm start
+nodemon server.js
 
 
 Features
